@@ -1,47 +1,9 @@
-import { useForm } from "react-hook-form";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth } from "../firebase";
-import { InferType } from "yup";
-import { useNavigate } from "react-router-dom";
-
-const schema = yup.object().shape({
-  name: yup.string().min(1, "Name is required").required(),
-  email: yup.string().email("Invalid email").required(),
-  password: yup.string().min(6, "Password is required").required(),
-});
-
-type RegisterForm = InferType<typeof schema>;
+import { useRegister } from "../hooks/useRegister";
 
 const RegisterPage = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    reset,
-  } = useForm({ resolver: yupResolver(schema) });
+  const { register, handleSubmit, onSubmit, errors, isSubmitting } =
+    useRegister();
 
-  const naviage = useNavigate();
-
-  const onSubmit = async (data: RegisterForm) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        data.email,
-        data.password
-      );
-      await updateProfile(userCredential.user, {
-        displayName: data.name,
-      });
-      alert("Registration successful!");
-      reset();
-      naviage("/login");
-    } catch (error: any) {
-      alert("Error: registration failed. Please try again.");
-      console.error(error);
-    }
-  };
   return (
     <div className="max-w-md mx-auto mt-10 p-6 border rounded shadow bg-white">
       <h2 className="text-2xl font-bold mb-6">Registration</h2>
@@ -57,7 +19,6 @@ const RegisterPage = () => {
             <p className="text-red-500 text-sm">{errors.name.message}</p>
           )}
         </div>
-
         <div>
           <label className="block mb-1 font-medium">Email</label>
           <input
@@ -69,7 +30,6 @@ const RegisterPage = () => {
             <p className="text-red-500 text-sm">{errors.email.message}</p>
           )}
         </div>
-
         <div>
           <label className="block mb-1 font-medium">Password</label>
           <input
@@ -81,7 +41,6 @@ const RegisterPage = () => {
             <p className="text-red-500 text-sm">{errors.password.message}</p>
           )}
         </div>
-
         <button
           type="submit"
           disabled={isSubmitting}
