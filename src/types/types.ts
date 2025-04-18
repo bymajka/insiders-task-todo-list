@@ -13,6 +13,7 @@ export type Todo = {
   description: string;
   createdAt: Date;
   todoListId: string;
+  collaborators: string[];
 };
 
 export type TodoListOrUndefined = TodoList | undefined;
