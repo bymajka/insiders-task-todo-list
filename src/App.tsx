@@ -2,6 +2,8 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import { Routes, Route, Navigate } from "react-router-dom";
 import PrivateRoute from "./routes/PrivateRoute";
+import Dashboard from "./pages/Dashboard";
+import TodoList from "./components/ToDoList/TodoList";
 
 function App() {
   return (
@@ -13,7 +15,15 @@ function App() {
         path="/dashboard"
         element={
           <PrivateRoute>
-            <h1>Dashboard</h1>
+            <Dashboard />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/dashboard/:id"
+        element={
+          <PrivateRoute>
+            <TodoList />
           </PrivateRoute>
         }
       />

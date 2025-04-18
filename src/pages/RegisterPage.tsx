@@ -4,6 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "../firebase";
 import { InferType } from "yup";
+import { useNavigate } from "react-router-dom";
 
 const schema = yup.object().shape({
   name: yup.string().min(1, "Name is required").required(),
@@ -21,6 +22,8 @@ const RegisterPage = () => {
     reset,
   } = useForm({ resolver: yupResolver(schema) });
 
+  const naviage = useNavigate();
+
   const onSubmit = async (data: RegisterForm) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -33,6 +36,7 @@ const RegisterPage = () => {
       });
       alert("Registration successful!");
       reset();
+      naviage("/login");
     } catch (error: any) {
       alert("Error: registration failed. Please try again.");
       console.error(error);

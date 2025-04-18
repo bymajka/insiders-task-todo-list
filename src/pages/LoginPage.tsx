@@ -3,6 +3,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email").required(),
@@ -22,6 +23,8 @@ const LoginPage = () => {
     reset,
   } = useForm<LoginForm>({ resolver: yupResolver(schema) });
 
+  const navigate = useNavigate();
+
   const onSubmit = async (data: LoginForm) => {
     try {
       const userCredential = await signInWithEmailAndPassword(
@@ -33,6 +36,7 @@ const LoginPage = () => {
       localStorage.setItem("token", token);
       alert("Login successful!");
       reset();
+      navigate("/dashboard");
     } catch (error: any) {
       alert("Error: login failed. Please try again.");
       console.error("Login failed: " + error.message);
