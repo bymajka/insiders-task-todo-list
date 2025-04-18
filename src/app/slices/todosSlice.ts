@@ -5,15 +5,7 @@ import {
   deleteTodoList as deleteTodoListService,
   editTodoList as updateTodoListService,
 } from "../../services/todoService";
-import { TodoList } from "../../types/types";
-
-interface TodosState {
-  lists: TodoList[];
-  loading: boolean;
-  createdAt: string;
-  error: string | null;
-  userId: string;
-}
+import { TodoList, TodosState } from "../../types/types";
 
 const initialState: TodosState = {
   lists: [],

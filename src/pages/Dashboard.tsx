@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { fetchTodoLists } from "../app/slices/todosSlice";
-import { Link } from "react-router-dom";
 import TodoListForm from "../components/ToDoList/TodoListForm";
 import TodoListCard from "../components/ToDoList/TodoListCard";
 
@@ -9,7 +8,7 @@ const Dashboard = () => {
   const dispatch = useAppDispatch();
   const { lists, loading, error } = useAppSelector((state) => state.todoLists);
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [editingList, setEditingList] = useState(null); // Track the list to edit
+  const [editingList, setEditingList] = useState(null);
 
   useEffect(() => {
     dispatch(fetchTodoLists());
@@ -19,8 +18,8 @@ const Dashboard = () => {
   if (error) return <p>Error: {error}</p>;
 
   const handleEdit = (list: any) => {
-    setEditingList(list); // Set the list to edit when "Edit" is clicked
-    setShowCreateForm(true); // Show the form to edit
+    setEditingList(list);
+    setShowCreateForm(true);
   };
 
   return (
