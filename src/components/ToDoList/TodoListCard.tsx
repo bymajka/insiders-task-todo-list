@@ -1,12 +1,8 @@
 import { Link } from "react-router-dom";
-import { TodoList } from "../../types/types";
+import { TodoListCardProps } from "../../types/types";
 import { useAppDispatch } from "../../app/hooks";
-import { deleteTodoList, updateTodoList } from "../../app/slices/todosSlice";
+import { deleteTodoList } from "../../app/slices/todosSlice";
 
-interface TodoListCardProps {
-  list: TodoList;
-  onEdit: () => void;
-}
 const ToDoListCard = ({ list, onEdit }: TodoListCardProps) => {
   const dispatch = useAppDispatch();
 

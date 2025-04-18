@@ -2,15 +2,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useAppDispatch } from "../../app/hooks";
 import { createNewTodoList, updateTodoList } from "../../app/slices/todosSlice";
-import { TodoList } from "../../types/types";
-
-type FormData = {
-  name: string;
-};
-
-interface TodoListFormProps {
-  listToEdit: TodoList | null; // Allow for both new and edit cases
-}
+import { TodoListFormData, TodoListFormProps } from "../../types/types";
 
 const TodoListForm = ({ listToEdit }: TodoListFormProps) => {
   const dispatch = useAppDispatch();
@@ -19,25 +11,23 @@ const TodoListForm = ({ listToEdit }: TodoListFormProps) => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FormData>();
+  } = useForm<TodoListFormData>();
 
   useEffect(() => {
     if (listToEdit) {
-      reset({ name: listToEdit.name }); // Prefill form if editing
+      reset({ name: listToEdit.name });
     } else {
-      reset({ name: "" }); // Reset form for new list
+      reset({ name: "" });
     }
   }, [listToEdit, reset]);
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = (data: TodoListFormData) => {
     if (listToEdit) {
-      // Dispatch update if editing
       dispatch(updateTodoList({ ...listToEdit, name: data.name }));
     } else {
-      // Dispatch create if adding a new list
       dispatch(createNewTodoList(data.name));
     }
-    reset(); // Clear form after submit
+    reset();
   };
 
   return (

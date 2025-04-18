@@ -3,7 +3,6 @@ import {
   collection,
   addDoc,
   getDocs,
-  getDoc,
   deleteDoc,
   doc,
   updateDoc,
@@ -11,7 +10,7 @@ import {
   where,
 } from "firebase/firestore";
 import { auth } from "../firebase";
-import { Todo, TodoList } from "../types/types";
+import { Todo } from "../types/types";
 const db = getFirestore();
 
 export const createTodoList = async (name: string) => {
@@ -80,16 +79,12 @@ export const deleteTodoList = async (id: string) => {
   }
 };
 
-export const getTodo = async (todoListId: string): Promise<Todo[]> => {
+export const getTodo = async (todoListId: string) => {
   try {
     const todoRef = collection(db, "todoLists", todoListId, "todos");
     const querySnapshot = await getDocs(todoRef);
-    const todos: Todo[] = querySnapshot.docs.map((doc) => ({
+    const todos = querySnapshot.docs.map((doc) => ({
       id: doc.id,
-      name: doc.data().name, // add this property
-      completed: doc.data().completed, // add this property
-      todoListId: todoListId, // add this property
-      createdAt: doc.data().createdAt.toDate().toISOString(), // 🔁 convert timestamp
       ...doc.data(),
     }));
 
@@ -100,53 +95,45 @@ export const getTodo = async (todoListId: string): Promise<Todo[]> => {
   }
 };
 
-export const addTodo = async (
-  todoListId: string,
-  newTodoTitle: string
-): Promise<void> => {
+export const addTodo = async (todoListId: string, todo: Omit<Todo, "id">) => {
   try {
-    const todoRef = doc(db, "todos", todoListId);
-    const todoDoc = await getDoc(todoRef);
-    const todos = todoDoc.exists() ? todoDoc.data()?.todos : [];
-    const updatedTodos = [
-      ...todos,
-      { id: Date.now().toString(), title: newTodoTitle },
-    ];
-    await updateDoc(todoRef, { todos: updatedTodos });
+    const todosRef = collection(db, "todoLists", todoListId, "todos");
+    const docRef = await addDoc(todosRef, todo);
+    return { id: docRef.id, ...todo };
   } catch (error) {
     console.error("Error adding todo:", error);
+    throw error;
   }
 };
 
-export const updateTodo = async (
-  todoListId: string,
-  todoId: string,
-  newTitle: string
-): Promise<void> => {
+export const updateTodo = async (todoListId: string, todo: Todo) => {
   try {
-    const todoRef = doc(db, "todos", todoListId);
-    const todoDoc = await getDoc(todoRef);
-    const todos = todoDoc.exists() ? todoDoc.data()?.todos : [];
-    const updatedTodos = todos.map((todo: Todo) =>
-      todo.id === todoId ? { ...todo, title: newTitle } : todo
-    );
-    await updateDoc(todoRef, { todos: updatedTodos });
+    if (typeof todoListId !== "string" || typeof todo.id !== "string") {
+      console.error("Invalid todoListId or todo.id", {
+        todoListId,
+        todoId: todo.id,
+      });
+      return;
+    }
+
+    const todoRef = doc(db, "todoLists", todoListId, "todos", todo.id);
+    await updateDoc(todoRef, {
+      name: todo.name,
+      description: todo.description,
+      completed: todo.completed,
+    });
   } catch (error) {
     console.error("Error updating todo:", error);
+    throw error;
   }
 };
 
-export const deleteTodo = async (
-  todoListId: string,
-  todoId: string
-): Promise<void> => {
+export const deleteTodo = async (todoListId: string, todoId: string) => {
   try {
-    const todoRef = doc(db, "todos", todoListId);
-    const todoDoc = await getDoc(todoRef);
-    const todos = todoDoc.exists() ? todoDoc.data()?.todos : [];
-    const updatedTodos = todos.filter((todo: Todo) => todo.id !== todoId);
-    await updateDoc(todoRef, { todos: updatedTodos });
+    const todoRef = doc(db, "todoLists", todoListId, "todos", todoId);
+    await deleteDoc(todoRef);
   } catch (error) {
     console.error("Error deleting todo:", error);
+    throw error;
   }
 };
